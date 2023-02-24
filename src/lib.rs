@@ -41,19 +41,17 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
                 _ => (),
             }
         }
-        if !is_key || level > 1 {
+        if !is_key || level > 1 || i == 0 {
             continue;
         }
-        if is_match(&s, i, &key) {
+        if is_match(&s[i - 1..i + key.len() + 1], &key) {
             let start = i + key.len() + 2;
             match find_end(&s, start) {
                 Ok(end) => {
                     let parsed = json::parse(&s[start..end]).unwrap();
-                    return Ok(parsed)
+                    return Ok(parsed);
                 }
-                Err(err) => {
-                    return Err(err)
-                }
+                Err(err) => return Err(err),
             }
         }
     }
@@ -61,14 +59,14 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
     Err("key not found")
 }
 
-fn is_match(s: &str, i: usize, chars: &str) -> bool {
-    if i > 0 && s.chars().nth(i - 1).unwrap() != '\"' || s.len() < i + chars.len() {
+fn is_match(s: &str, chars: &str) -> bool {
+    if s.chars().next().unwrap() != '\"' {
         return false;
     }
-    if &s[i..i + chars.len()] != chars {
+    if &s[1..1 + chars.len()] != chars {
         return false;
     }
-    if s.chars().nth(i + chars.len()).unwrap() != '\"' {
+    if s.chars().last().unwrap() != '\"' {
         return false;
     }
     true
@@ -107,8 +105,8 @@ fn find_end(buf: &str, start: usize) -> Result<usize, &'static str> {
 
 #[cfg(test)]
 mod tests {
-    use json::{object, array};
     use super::*;
+    use json::{array, object};
 
     #[test]
     fn test() {
@@ -128,15 +126,21 @@ mod tests {
         assert_eq!(value, "baz");
 
         let value = extract(r#"{"foo":{"bar":"baz"}}"#, "foo").unwrap();
-        assert_eq!(value, object!{
-            bar: "baz"
-        });
+        assert_eq!(
+            value,
+            object! {
+                bar: "baz"
+            }
+        );
 
         let value = extract(r#"{"foo":["bar","baz"]}"#, "foo").unwrap();
-        assert_eq!(value, array!{
-            "bar",
-            "baz"
-        });
+        assert_eq!(
+            value,
+            array! {
+                "bar",
+                "baz"
+            }
+        );
 
         let value = extract(r#"{"foo": "bar"}"#, "foo").unwrap();
         assert_eq!(value, "bar");
@@ -154,10 +158,13 @@ mod tests {
         extract(r#"{"foo":"bar"}"#, "bar").unwrap_err();
 
         let value = extract(r#"{"foo":{"bar":{"baz":"beep"}}}"#, "foo").unwrap();
-        assert_eq!(value, object!{
-            bar: {
-                baz: "beep"
+        assert_eq!(
+            value,
+            object! {
+                bar: {
+                    baz: "beep"
+                }
             }
-        });
+        );
     }
 }
