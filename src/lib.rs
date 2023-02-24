@@ -13,6 +13,7 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
     let mut is_key = true;
     let mut level = 0;
     let mut skip_next = false;
+    let key_decorated = format!("\"{key}\"");
 
     for i in 0..s.len() {
         let c = s.chars().nth(i).unwrap();
@@ -51,10 +52,7 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
         if !is_key || level > 1 || i == 0 {
             continue;
         }
-        let prev = s.chars().nth(i - 1).unwrap();
-        let key_slice = &s[i..i + key.len()];
-        let after = s.chars().nth(i + key.len()).unwrap();
-        if prev == '\"' && key_slice == key && after == '\"' {
+        if &s[i - 1..i + key.len() + 1] == key_decorated {
             let start = i + key.len() + 2;
             match find_end(&s, start) {
                 Ok(end) => {
