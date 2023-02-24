@@ -43,7 +43,10 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
         if !is_key || level > 1 || i == 0 {
             continue;
         }
-        if is_key_match(&s[i - 1..i + key.len() + 1], &key) {
+        let prev = s.chars().nth(i - 1).unwrap();
+        let key_slice = &s[i..i + key.len()];
+        let after = s.chars().nth(i + key.len()).unwrap();
+        if prev == '\"' && key_slice == key && after == '\"' {
             let start = i + key.len() + 2;
             match find_end(&s, start) {
                 Ok(end) => {
@@ -56,12 +59,6 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
     }
 
     Err("key not found")
-}
-
-fn is_key_match(s: &str, key: &str) -> bool {
-    return s.chars().next().unwrap() == '\"'
-        && &s[1..s.len() - 1] == key
-        && s.chars().last().unwrap() == '\"';
 }
 
 fn find_end(buf: &str, start: usize) -> Result<usize, &'static str> {
