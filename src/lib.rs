@@ -14,9 +14,10 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
     let mut level = 0;
     let mut skip_next = false;
     let key_decorated = format!("\"{key}\"");
+    let mut chars = s.chars();
 
     for i in 0..s.len() {
-        let c = s.chars().nth(i).unwrap();
+        let c = chars.next().unwrap();
         if skip_next {
             skip_next = false;
             continue;
