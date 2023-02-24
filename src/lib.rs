@@ -74,12 +74,15 @@ fn find_end(buf: &str, start: usize) -> Result<usize, &'static str> {
     }
 
     let mut level = 0;
-    let s = buf.chars().nth(start).unwrap();
+    let mut s: Option<char> = Default::default();
     let mut buf_chars = buf.chars();
     buf_chars.nth(start - 1);
 
     for i in start..(buf.len()) {
         let c = buf_chars.next().unwrap();
+        if let None = s {
+            s = Some(c);
+        }
         if c == '{' || c == '[' {
             level = level + 1;
             continue;
@@ -90,7 +93,9 @@ fn find_end(buf: &str, start: usize) -> Result<usize, &'static str> {
             }
         }
         if level < 0 || level == 0 && (c == ',' || c == '}' || c == ']') {
-            if s == '{' || s == '[' {
+            if let Some('{') = s {
+                return Ok(i + 1);
+            } else if let Some('[') = s {
                 return Ok(i + 1);
             } else {
                 return Ok(i);
