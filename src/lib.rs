@@ -1,5 +1,13 @@
 use json::{self, JsonValue};
 
+/// Extract a value from a json string without parsing the whole thing
+///
+/// # Examples
+///
+/// ```
+/// let value = binary_extract::extract(r#"{"foo": "bar"}"#, "foo").unwrap();
+/// assert_eq!(value, "bar");
+/// ```
 pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
     let mut in_string = false;
     let mut is_key = true;
