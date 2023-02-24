@@ -1,6 +1,8 @@
 # binary-extract
 Extract a value from a json blob without parsing the whole thing
 
+[:package: Crate](https://crates.io/crates/binary-extract)
+
 ## Example
 
 ```rs
