@@ -1,6 +1,5 @@
 use json::{self, JsonValue};
 
-// TODO: Return any type
 pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
     let mut in_string = false;
     let mut is_key = true;
@@ -44,7 +43,7 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
         if !is_key || level > 1 || i == 0 {
             continue;
         }
-        if is_match(&s[i - 1..i + key.len() + 1], &key) {
+        if is_key_match(&s[i - 1..i + key.len() + 1], &key) {
             let start = i + key.len() + 2;
             match find_end(&s, start) {
                 Ok(end) => {
@@ -59,9 +58,9 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
     Err("key not found")
 }
 
-fn is_match(s: &str, chars: &str) -> bool {
+fn is_key_match(s: &str, key: &str) -> bool {
     return s.chars().next().unwrap() == '\"'
-        && &s[1..1 + chars.len()] == chars
+        && &s[1..s.len() - 1] == key
         && s.chars().last().unwrap() == '\"';
 }
 
