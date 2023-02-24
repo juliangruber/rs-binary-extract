@@ -4,11 +4,13 @@ use json;
 
 fn native_extract(input: &str) {
     let obj = json::parse(input).unwrap();
-    let _ = &obj["projectId"];
+    let value = &obj["projectId"];
+    assert_eq!(value, "foobarbaz");
 }
 
 fn extract(input: &str) {
-    let _ = binary_extract::extract(input, "projectId").unwrap();
+    let value = binary_extract::extract(input, "projectId").unwrap();
+    assert_eq!(value, "foobarbaz");
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
