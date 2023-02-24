@@ -60,16 +60,9 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
 }
 
 fn is_match(s: &str, chars: &str) -> bool {
-    if s.chars().next().unwrap() != '\"' {
-        return false;
-    }
-    if &s[1..1 + chars.len()] != chars {
-        return false;
-    }
-    if s.chars().last().unwrap() != '\"' {
-        return false;
-    }
-    true
+    return s.chars().next().unwrap() == '\"'
+        && &s[1..1 + chars.len()] == chars
+        && s.chars().last().unwrap() == '\"';
 }
 
 fn find_end(buf: &str, start: usize) -> Result<usize, &'static str> {
