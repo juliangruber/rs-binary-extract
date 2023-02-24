@@ -75,9 +75,11 @@ fn find_end(buf: &str, start: usize) -> Result<usize, &'static str> {
 
     let mut level = 0;
     let s = buf.chars().nth(start).unwrap();
+    let mut buf_chars = buf.chars();
+    buf_chars.nth(start - 1);
 
     for i in start..(buf.len()) {
-        let c = buf.chars().nth(i).unwrap();
+        let c = buf_chars.next().unwrap();
         if c == '{' || c == '[' {
             level = level + 1;
             continue;
