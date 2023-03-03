@@ -1,6 +1,6 @@
 [package]
 name = "binary-extract"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 description = "Extract a value from a json string without parsing the whole thing"
 license = "MIT"
