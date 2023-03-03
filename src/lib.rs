@@ -59,12 +59,16 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
                 _ => (),
             }
         }
-        // TODO: Safer slice logic
-        if is_key && level == 1 && i > 0 && &s[i - 1..i + key.len() + 1] == key_decorated {
-            let start = i + key.len() + 2;
-            let end = find_end(&s, start)?;
-            return Ok(json::parse(&s[start..end])?);
+        if is_key && level == 1 && i > 0 {
+            if let Some(sub) = s.get(i - 1..i + key.len() + 1) {
+                if sub == key_decorated {
+                    let start = i + key.len() + 2;
+                    let end = find_end(&s, start)?;
+                    return Ok(json::parse(&s[start..end])?);
+                }
+            }
         }
+
     }
 
     Err(ExtractError::KeyNotFound())
