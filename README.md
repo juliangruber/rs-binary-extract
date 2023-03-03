@@ -21,7 +21,7 @@ assert_eq!(value, "bar");
 ## Perf
 
 With the object from [benches/json.rs](benches/json.rs), `extract()` is ~3.5x
-faster than `json::parse`.
+faster than `json::parse` and ~6.5x faster than `serde_json::from_str`.
 
 ## See also
 
