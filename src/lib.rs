@@ -57,7 +57,10 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
             if let Some(sub) = s.get(i - 1..i + key.len() + 1) {
                 if sub == key_decorated {
                     let start = i + key.len() + 2;
-                    let end = find_end(&s, start)?;
+                    if s.len() <= start {
+                        return Err(ExtractError::JsonTooShort());
+                    }
+                    let end = find_end(&s[start..])? + start;
                     return Ok(json::parse(&s[start..end])?);
                 }
             }
@@ -68,18 +71,11 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
     Err(ExtractError::KeyNotFound())
 }
 
-fn find_end(s: &str, start: usize) -> Result<usize, ExtractError> {
-    if s.len() <= start {
-        return Err(ExtractError::JsonTooShort());
-    }
-
+fn find_end(s: &str) -> Result<usize, ExtractError> {
     let mut level = 0;
     let mut first_char: Option<char> = Default::default();
-    let mut chars = s.chars();
-    chars.nth(start - 1);
 
-    for i in start..(s.len()) {
-        let c = chars.next().unwrap();
+    for (i, c) in s.chars().enumerate() {
         if let None = first_char {
             first_char = Some(c);
         }

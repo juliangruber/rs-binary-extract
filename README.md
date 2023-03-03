@@ -20,7 +20,7 @@ assert_eq!(value, "bar");
 
 ## Perf
 
-With the object from [benches/json.rs](benches/json.rs), `extract()` is ~3x
+With the object from [benches/json.rs](benches/json.rs), `extract()` is ~3.5x
 faster than `json::parse`.
 
 ## See also
