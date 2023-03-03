@@ -1,13 +1,8 @@
 # binary-extract
-Extract a value from a json blob without parsing the whole thing
+Extract a value from a json string without parsing the whole thing.
+
+With the case from [benches/json.rs](benches/json.rs), this is ~3x faster
+than using the `json` crate directly.
 
 [:package: Crate](https://crates.io/crates/binary-extract)
-
-## Example
-
-```rs
-use binary_extract;
-
-let value = binary_extract::extract(r#"{"foo": "bar"}"#, "foo").unwrap();
-assert_eq!(value, "bar");
-```
+[:book: Docs](https://docs.rs/binary-extract/latest/binary_extract/)
