@@ -8,6 +8,12 @@ pub enum ExtractError {
     MissingEnd(),
 }
 
+impl From<json::Error> for ExtractError {
+    fn from(err: json::Error) -> Self {
+        ExtractError::JsonError(err)
+    }
+}
+
 /// Extract a value from a json string without parsing the whole thing.
 ///
 /// With the case from [benches/json.rs](benches/json.rs), this is ~3x
@@ -54,10 +60,7 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
         if is_key && level == 1 && i > 0 && &s[i - 1..i + key.len() + 1] == key_decorated {
             let start = i + key.len() + 2;
             let end = find_end(&s, start)?;
-            return match json::parse(&s[start..end]) {
-                Ok(parsed) => Ok(parsed),
-                Err(err) => Err(ExtractError::JsonError(err)),
-            }
+            return Ok(json::parse(&s[start..end])?);
         }
     }
 
