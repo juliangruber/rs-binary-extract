@@ -44,18 +44,10 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
         }
         if !in_string {
             match c {
-                ':' => {
-                    is_key = false;
-                }
-                ',' => {
-                    is_key = true;
-                }
-                '{' => {
-                    level = level + 1;
-                }
-                '}' => {
-                    level = level - 1;
-                }
+                ':' => is_key = false,
+                ',' => is_key = true,
+                '{' => level = level + 1,
+                '}' => level = level - 1,
                 _ => (),
             }
         }
