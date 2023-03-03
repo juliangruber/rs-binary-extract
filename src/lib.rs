@@ -89,14 +89,18 @@ fn find_end(buf: &str, start: usize) -> Result<usize, ExtractError> {
         if let None = s {
             s = Some(c);
         }
-        if c == '{' || c == '[' {
-            level = level + 1;
-            continue;
-        } else if c == '}' || c == ']' {
-            level = level - 1;
-            if level > 0 {
+        match c {
+            '{' | '[' => {
+                level = level + 1;
                 continue;
             }
+            '}' | ']' => {
+                level = level - 1;
+                if level > 0 {
+                    continue;
+                }
+            }
+            _ => ()
         }
         if level < 0 || level == 0 && (c == ',' || c == '}' || c == ']') {
             return match s {
