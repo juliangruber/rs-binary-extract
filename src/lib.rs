@@ -29,19 +29,13 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
     let mut in_string = false;
     let mut is_key = true;
     let mut level = 0;
-    let mut skip_next = false;
     let key_decorated = format!("\"{key}\"");
+    let mut it = s.chars().enumerate();
 
-    for (i, c) in s.chars().enumerate() {
-        // TODO: Find a more elegant way to skip one item from inside the
-        // iterator loop
-        if skip_next {
-            skip_next = false;
-            continue;
-        }
+    while let Some((i, c)) = it.next()  {
         match c {
             '\\' => {
-                skip_next = true;
+                it.nth(0);
                 continue;
             }
             '"' => {
