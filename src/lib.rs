@@ -66,20 +66,20 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
     Err(ExtractError::KeyNotFound())
 }
 
-fn find_end(buf: &str, start: usize) -> Result<usize, ExtractError> {
-    if buf.len() <= start {
+fn find_end(s: &str, start: usize) -> Result<usize, ExtractError> {
+    if s.len() <= start {
         return Err(ExtractError::JsonTooShort());
     }
 
     let mut level = 0;
-    let mut s: Option<char> = Default::default();
-    let mut buf_chars = buf.chars();
-    buf_chars.nth(start - 1);
+    let mut first_char: Option<char> = Default::default();
+    let mut chars = s.chars();
+    chars.nth(start - 1);
 
-    for i in start..(buf.len()) {
-        let c = buf_chars.next().unwrap();
-        if let None = s {
-            s = Some(c);
+    for i in start..(s.len()) {
+        let c = chars.next().unwrap();
+        if let None = first_char {
+            first_char = Some(c);
         }
         match c {
             '{' | '[' => {
@@ -95,7 +95,7 @@ fn find_end(buf: &str, start: usize) -> Result<usize, ExtractError> {
             _ => ()
         }
         if level < 0 || level == 0 && (c == ',' || c == '}' || c == ']') {
-            return match s {
+            return match first_char {
                 Some('{') | Some('[') => Ok(i + 1),
                 _ => Ok(i),
             };
