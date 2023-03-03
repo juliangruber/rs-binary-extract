@@ -33,6 +33,8 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
     let key_decorated = format!("\"{key}\"");
 
     for (i, c) in s.chars().enumerate() {
+        // TODO: Find a more elegant way to skip one item from inside the
+        // iterator loop
         if skip_next {
             skip_next = false;
             continue;
@@ -57,6 +59,7 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
                 _ => (),
             }
         }
+        // TODO: Safer slice logic
         if is_key && level == 1 && i > 0 && &s[i - 1..i + key.len() + 1] == key_decorated {
             let start = i + key.len() + 2;
             let end = find_end(&s, start)?;
