@@ -59,20 +59,15 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
                 _ => (),
             }
         }
-        if !is_key || level > 1 || i == 0 {
-            continue;
-        }
-        if &s[i - 1..i + key.len() + 1] == key_decorated {
+        if is_key && level == 1 && i > 0 && &s[i - 1..i + key.len() + 1] == key_decorated {
             let start = i + key.len() + 2;
             return match find_end(&s, start) {
-                Ok(end) => {
-                    match json::parse(&s[start..end]) {
-                        Ok(parsed) => Ok(parsed),
-                        Err(err) => Err(ExtractError::JsonError(err)),
-                    }
-                }
+                Ok(end) => match json::parse(&s[start..end]) {
+                    Ok(parsed) => Ok(parsed),
+                    Err(err) => Err(ExtractError::JsonError(err)),
+                },
                 Err(err) => Err(err),
-            }
+            };
         }
     }
 
@@ -105,10 +100,9 @@ fn find_end(buf: &str, start: usize) -> Result<usize, ExtractError> {
         }
         if level < 0 || level == 0 && (c == ',' || c == '}' || c == ']') {
             return match s {
-                Some('{') => Ok(i + 1),
-                Some('[') => Ok(i + 1),
-                _ => Ok(i)
-            }
+                Some('{') | Some('[') => Ok(i + 1),
+                _ => Ok(i),
+            };
         }
     }
 
