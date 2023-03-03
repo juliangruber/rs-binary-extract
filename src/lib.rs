@@ -106,12 +106,10 @@ fn find_end(buf: &str, start: usize) -> Result<usize, ExtractError> {
             }
         }
         if level < 0 || level == 0 && (c == ',' || c == '}' || c == ']') {
-            if let Some('{') = s {
-                return Ok(i + 1);
-            } else if let Some('[') = s {
-                return Ok(i + 1);
-            } else {
-                return Ok(i);
+            return match s {
+                Some('{') => Ok(i + 1),
+                Some('[') => Ok(i + 1),
+                _ => Ok(i)
             }
         }
     }
