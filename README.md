@@ -23,6 +23,11 @@ assert_eq!(value, "bar");
 With the object from [benches/json.rs](benches/json.rs), `extract()` is ~3x
 faster than `json::parse`.
 
+## See also
+
+- [binary-extract](https://github.com/juliangruber/binary-extract) (JavaScript)
+- [go-binary-extract](https://github.com/juliangruber/go-binary-extract)
+
 ## License
 
 MIT
