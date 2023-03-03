@@ -16,8 +16,8 @@ impl From<json::Error> for ExtractError {
 
 /// Extract a value from a json string without parsing the whole thing.
 ///
-/// With the case from [benches/json.rs](benches/json.rs), this is ~3x
-/// faster than using the `json` crate directly.
+/// With the object from benches/json.rs, `extract()` is ~3.5x faster than
+/// `json::parse`.
 ///
 /// # Examples
 ///
