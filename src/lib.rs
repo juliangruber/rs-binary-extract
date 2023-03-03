@@ -66,14 +66,14 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
         }
         if &s[i - 1..i + key.len() + 1] == key_decorated {
             let start = i + key.len() + 2;
-            match find_end(&s, start) {
+            return match find_end(&s, start) {
                 Ok(end) => {
                     match json::parse(&s[start..end]) {
-                        Ok(parsed) => return Ok(parsed),
-                        Err(err) => return Err(ExtractError::JsonError(err)),
-                    };
+                        Ok(parsed) => Ok(parsed),
+                        Err(err) => Err(ExtractError::JsonError(err)),
+                    }
                 }
-                Err(err) => return Err(err),
+                Err(err) => Err(err),
             }
         }
     }
