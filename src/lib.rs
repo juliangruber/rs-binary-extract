@@ -1,5 +1,13 @@
 use json::{self, JsonValue};
 
+#[derive(Debug)]
+pub enum ExtractError {
+    JsonError(json::Error),
+    KeyNotFound(),
+    JsonTooShort(),
+    MissingEnd(),
+}
+
 /// Extract a value from a json string without parsing the whole thing.
 ///
 /// With the case from [benches/json.rs](benches/json.rs), this is ~3x
@@ -11,7 +19,7 @@ use json::{self, JsonValue};
 /// let value = binary_extract::extract(r#"{"foo": "bar"}"#, "foo").unwrap();
 /// assert_eq!(value, "bar");
 /// ```
-pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
+pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
     let mut in_string = false;
     let mut is_key = true;
     let mut level = 0;
@@ -60,20 +68,22 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, &'static str> {
             let start = i + key.len() + 2;
             match find_end(&s, start) {
                 Ok(end) => {
-                    let parsed = json::parse(&s[start..end]).unwrap();
-                    return Ok(parsed);
+                    match json::parse(&s[start..end]) {
+                        Ok(parsed) => return Ok(parsed),
+                        Err(err) => return Err(ExtractError::JsonError(err)),
+                    };
                 }
                 Err(err) => return Err(err),
             }
         }
     }
 
-    Err("key not found")
+    Err(ExtractError::KeyNotFound())
 }
 
-fn find_end(buf: &str, start: usize) -> Result<usize, &'static str> {
+fn find_end(buf: &str, start: usize) -> Result<usize, ExtractError> {
     if buf.len() <= start {
-        return Err("json too short");
+        return Err(ExtractError::JsonTooShort());
     }
 
     let mut level = 0;
@@ -106,7 +116,7 @@ fn find_end(buf: &str, start: usize) -> Result<usize, &'static str> {
         }
     }
 
-    Err("missing end")
+    Err(ExtractError::MissingEnd())
 }
 
 #[cfg(test)]
