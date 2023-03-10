@@ -60,18 +60,17 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
                     if s.len() <= start {
                         return Err(ExtractError::JsonTooShort());
                     }
-                    let end = find_end(&s[start..])? + start;
-                    return Ok(json::parse(&s[start..end])?);
+                    let slice = find_end(&s[start..])?;
+                    return Ok(json::parse(&slice)?);
                 }
             }
         }
-
     }
 
     Err(ExtractError::KeyNotFound())
 }
 
-fn find_end(s: &str) -> Result<usize, ExtractError> {
+fn find_end(s: &str) -> Result<&str, ExtractError> {
     let mut level = 0;
     let mut first_char: Option<char> = Default::default();
 
@@ -94,8 +93,8 @@ fn find_end(s: &str) -> Result<usize, ExtractError> {
         }
         if level < 0 || level == 0 && (c == ',' || c == '}' || c == ']') {
             return match first_char {
-                Some('{') | Some('[') => Ok(i + 1),
-                _ => Ok(i),
+                Some('{') | Some('[') => Ok(&s[..i + 1]),
+                _ => Ok(&s[..i]),
             };
         }
     }
