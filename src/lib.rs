@@ -32,7 +32,7 @@ pub fn extract(s: &str, key: &str) -> Result<JsonValue, ExtractError> {
     let key_decorated = format!("\"{key}\"");
     let mut it = s.chars().enumerate();
 
-    while let Some((i, c)) = it.next()  {
+    while let Some((i, c)) = it.next() {
         match c {
             '\\' => {
                 it.nth(0);
@@ -90,7 +90,7 @@ fn find_end(s: &str) -> Result<usize, ExtractError> {
                     continue;
                 }
             }
-            _ => ()
+            _ => (),
         }
         if level < 0 || level == 0 && (c == ',' || c == '}' || c == ']') {
             return match first_char {
